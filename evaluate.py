@@ -6,6 +6,7 @@ year for every orthophoto (rows as in metadata.csv), saved as a .npy array of sh
 with evaluate == True are scored (full dates that are not on placeholder days).
 
     python evaluate.py baselines.npz --key s2_model
+    python evaluate.py baselines.npz --key most_common_date --point mode
     python evaluate.py my_predictions.npy
 
 A method that returns a single date can be scored on the error metrics by putting
@@ -13,7 +14,8 @@ all probability on that day; coverage and NLL are then not meaningful.
 
 Metrics (identical to the paper):
   MAE, median   absolute circular error in days between the predicted date (circular
-                median of the distribution) and the submitted date
+                median of the distribution; --point mode: its mode, as for the
+                paper's Most common date baseline) and the submitted date
   MAE_bw        MAE with every spatial block weighted equally
   within30      share of orthophotos dated within 30 days
   cov50/80/95   share whose submitted date lies in the 50/80/95 % prediction interval
@@ -56,15 +58,18 @@ def interval_mask(p, mass):
     return mask
 
 
-def evaluate(p, meta):
-    """p: (N, 365) for all rows of metadata.csv -> dict of metrics on the evaluation rows."""
+def evaluate(p, meta, point="median"):
+    """p: (N, 365) for all rows of metadata.csv -> dict of metrics on the evaluation rows.
+
+    point: predicted date from the circular median (default) or the mode of p."""
     assert p.shape == (len(meta), NBINS), f"expected {(len(meta), NBINS)}, got {p.shape}"
     sel = meta["evaluate"].values.astype(bool)
     p = np.asarray(p[sel], np.float64)
     p = p / p.sum(1, keepdims=True)
     true = meta["day_bin"].values[sel]
     tb = np.floor(true).astype(int) % NBINS
-    err = np.abs(circ_diff(predicted_bin(p) + 0.5, true)) * DAY_PER_BIN
+    pred = predicted_bin(p) if point == "median" else p.argmax(1)
+    err = np.abs(circ_diff(pred + 0.5, true)) * DAY_PER_BIN
     block = meta["block"].values[sel]
     w = 1.0 / pd.Series(block).map(pd.Series(block).value_counts()).values
     out = dict(n=int(sel.sum()), MAE=err.mean(), MAE_bw=(err * w).sum() / w.sum(),
@@ -84,15 +89,17 @@ if __name__ == "__main__":
     ap.add_argument("predictions")
     ap.add_argument("--key", help="array name when the file is an .npz")
     ap.add_argument("--metadata", default=join(dirname(abspath(__file__)), "metadata.csv"))
+    ap.add_argument("--point", choices=("median", "mode"), default="median",
+                    help="predicted date: circular median (default) or mode")
     ap.add_argument("--by", help="also report per group of this metadata column, e.g. biome")
     a = ap.parse_args()
     meta = pd.read_csv(a.metadata)
     z = np.load(a.predictions)
     p = z[a.key] if a.key else (z if isinstance(z, np.ndarray) else z[z.files[0]])
     p = np.asarray(p, np.float64)
-    print(json.dumps(evaluate(p, meta), indent=1))
+    print(json.dumps(evaluate(p, meta, a.point), indent=1))
     if a.by:
         for k, g in meta.groupby(a.by):
             if g["evaluate"].sum() >= 20:
                 m = meta.copy(); m["evaluate"] &= (m[a.by] == k)
-                print(k, json.dumps(evaluate(p, m)))
+                print(k, json.dumps(evaluate(p, m, a.point)))

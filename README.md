@@ -72,6 +72,7 @@ dataset), `lat`, `lon`, `country`, `biome`, `platform`, `gsd_cm`, `year`, `month
 
 ```bash
 python evaluate.py baselines.npz --key s2_model      # reproduces the paper's Table 3
+python evaluate.py baselines.npz --key most_common_date --point mode
 python evaluate.py my_predictions.npy --by biome
 python example_train.py features.npz
 ```
@@ -91,9 +92,10 @@ Errors in days. MAE bw weights every spatial block equally. Coverage 80 %: share
 orthophotos whose submitted date lies in the smallest set of days holding 80 %
 probability; a calibrated model reaches .80.
 
-¹ The predicted date is the mode of the density of the training flight dates, as in the
-paper. `baselines.npz` stores that density; `evaluate.py`, which predicts its circular
-median, gives MAE 61.2, MAE bw 65.5, median 47.8 and .33 within 30 days.
+¹ The predicted date is the mode of the density of the training flight dates (the most
+common flight day), which `baselines.npz` stores; score it with
+`python evaluate.py baselines.npz --key most_common_date --point mode`. All other rows use
+the circular median (the default).
 
 ## Reproducing the paper
 
