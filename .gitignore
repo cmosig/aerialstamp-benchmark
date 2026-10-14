@@ -1,0 +1,5 @@
+*.npy
+*.npz
+*.zip
+__pycache__/
+runs/
