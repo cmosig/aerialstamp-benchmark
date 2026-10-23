@@ -38,7 +38,7 @@ Repository (this folder):
 | `example_train.py` | a minimal model on the features, as a starting point |
 | `paper/` | the paper's training and calibration code, reading the benchmark files (see "Reproducing the paper") |
 
-Data archive `aerialstamp-benchmark-v1.zip` (350 MB; see "Download"), rows aligned with `metadata.csv`:
+Data archive [`aerialstamp-benchmark-v1.zip`](https://data2.deadtrees.earth/assets/v1/aerialstampbench/aerialstamp-benchmark-v1.zip) (341 MB; see "Download"), rows aligned with `metadata.csv`:
 
 | file | array | shape | content |
 |---|---|---|---|
@@ -122,8 +122,18 @@ the image figures. The forward-in-time test can be run with `tsplit=2025` in
 
 ## Download
 
-The archive is not in this repository. TODO: add the download link once it is
-deposited (e.g. Zenodo).
+The data archive (341 MB) is not in this repository; download it from
+deadtrees.earth:
+
+```bash
+wget https://data2.deadtrees.earth/assets/v1/aerialstampbench/aerialstamp-benchmark-v1.zip
+unzip aerialstamp-benchmark-v1.zip
+export AERIALSTAMP_BENCHMARK=$PWD/aerialstamp-benchmark-v1
+```
+
+It holds `features.npz` and `baselines.npz` together with a copy of the files of this
+repository. The raw patches (`patches.npy`, 17 GB) are not online yet; ask the
+authors if you need them.
 
 ## Licence and attribution
 
