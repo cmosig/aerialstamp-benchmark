@@ -4,8 +4,9 @@ A benchmark for estimating the **acquisition date (day of year) of a drone or ai
 orthophoto** from the image, its location and submitted year, and the weekly Sentinel-2
 time series of the site. It accompanies the paper
 
-> Mosig, C., Montero, D., Mahecha, M. D., Vajna-Jehle, J., Kattenborn, T. *AerialStamp:
-> dating aerial orthophotos from visual cues and Sentinel-2 time series* (in preparation),
+> Mosig, C., Montero Loaiza, D., Mahecha, M. D., Vajna-Jehle, J., Kattenborn, T. (2026).
+> *AerialStamp: dating aerial orthophotos from visual cues and Sentinel-2 time series.*
+> EarthArXiv (preprint). https://doi.org/10.31223/X5SZ4Q
 
 and holds the data of the paper's experiments, its evaluation protocol and the
 out-of-fold predictions of its models as baselines. The trained models are in the
@@ -145,4 +146,17 @@ European Space Agency. Code and files in this repository are licensed under
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (see `LICENSE`).
 
 Please cite the paper above and deadtrees.earth (Mosig et al., 2026) when using the
-benchmark.
+benchmark:
+
+```bibtex
+@article{mosig2026aerialstamp,
+  title   = {AerialStamp: dating aerial orthophotos from visual cues and Sentinel-2 time series},
+  author  = {Mosig, Clemens and Montero Loaiza, David and Mahecha, Miguel D. and
+             Vajna-Jehle, Janusch and Kattenborn, Teja},
+  journal = {EarthArXiv},
+  note    = {Preprint},
+  year    = {2026},
+  doi     = {10.31223/X5SZ4Q},
+  url     = {https://doi.org/10.31223/X5SZ4Q}
+}
+```
